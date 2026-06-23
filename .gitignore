@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+model.pkl
+encoders.pkl
+*.pkl
+node_modules/
+.env
