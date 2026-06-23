@@ -1,9 +1,12 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .ml_model import predict
+from .diagnosis import detect_faults
+
 
 @api_view(['POST'])
 def predict_view(request):
+
     data = request.data
 
     features = [
@@ -22,5 +25,10 @@ def predict_view(request):
     ]
 
     result = predict(features)
+    faults = detect_faults(features)
 
-    return Response({"Need_Maintenance": int(result)})
+    return Response({
+        "Need_Maintenance": result["prediction"],
+        "Risk_Score": result["risk_score"],
+        "Faults_Detected": faults
+    })
