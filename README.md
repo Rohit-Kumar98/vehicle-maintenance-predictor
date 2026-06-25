@@ -1,81 +1,168 @@
-# 🚗 Vehicle Maintenance Predictor (AI + Full Stack Project)
+# 🚗 AutoCare AI - Vehicle Maintenance Predictor
 
 ## 📌 Overview
 
-The **Vehicle Maintenance Predictor** is an AI-powered full-stack system that predicts whether a vehicle requires maintenance based on its condition, usage history, and performance indicators.
+AutoCare AI is a machine learning-based vehicle maintenance prediction system that predicts whether a vehicle requires maintenance based on its condition and usage history.
 
-It also provides:
-- ⚠️ Risk Score (0–100%)
-- 🔧 Fault Detection (Explainable AI layer)
-- 📊 Maintenance Prediction (Yes/No)
+The system also generates:
 
-This project combines **Machine Learning + Django REST API + Rule-based diagnostics** to simulate a real-world predictive maintenance system.
+* Maintenance Risk Score (0–100%)
+* Fault Detection Reports
+* Vehicle Health Analysis
 
----
+Built using:
 
-# 🎯 Features
-
-## 🤖 Machine Learning
-- Trained classification model
-- Predicts maintenance requirement
-- Outputs probability-based risk score
-
-## ⚠️ Risk Analysis
-- Risk Score (0–100%)
-- Risk Levels:
-  - Safe (0–30%)
-  - Warning (30–70%)
-  - Critical (70–100%)
-
-## 🔧 Fault Detection Engine
-Detects possible issues like:
-- Worn Tires
-- Brake Degradation
-- Weak Battery
-- Service Overdue
-- High Mileage Wear
-
-## 🌐 REST API
-- Django REST Framework backend
-- `/api/predict/` endpoint for predictions
+* React + Vite (Frontend)
+* Django REST Framework (Backend)
+* Random Forest Classifier (Machine Learning)
 
 ---
 
-# 🏗️ Project Architecture
+## 🚀 Features
 
-Frontend
-        ↓
-Django REST API
-        ↓
-ML Model (Scikit-learn)
-        ↓
-Prediction + Risk Score
-        ↓
-Rule-based Fault Detection Engine
+### Machine Learning
 
----
+* Random Forest maintenance prediction
+* Risk score generation
+* Automatic fault detection
+* Multiple vehicle types supported
 
-# 🧠 Tech Stack
+### Backend
 
-## Backend
-- Python
-- Django
-- Django REST Framework
+* Django REST API
+* Input validation
+* CORS support
+* Encoder-based categorical processing
 
-## Machine Learning
-- Scikit-learn
-- Pandas
-- NumPy
-- Joblib
+### Frontend
 
-## Tools
-- Git & GitHub
-- VS Code
+* Modern React UI
+* Interactive dashboard
+* Real-time predictions
+* Vehicle health visualization
 
 ---
 
-# 📊 API Endpoint
+## 📂 Project Structure
 
-## 🔹 Predict Maintenance
+```text
+vehicle-maintenance-predictor/
 
-**POST**
+├── backend/
+│   ├── api/
+│   ├── backend/
+│   ├── manage.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js
+│
+├── ml/
+│   ├── train.py
+│   ├── model.pkl
+│   ├── encoders.pkl
+│   └── vehicle_maintenance_data.csv
+│
+└── README.md
+```
+
+---
+
+## 📊 Dataset Features
+
+The model uses:
+
+* Vehicle Model
+* Maintenance History
+* Reported Issues
+* Vehicle Age
+* Odometer Reading
+* Days Since Last Service
+* Service History Score
+* Accident History
+* Fuel Efficiency
+* Tire Condition
+* Brake Condition
+* Battery Status
+
+---
+
+## 🔧 Installation
+
+### Backend
+
+```bash
+cd backend
+
+python -m venv venv
+
+venv\Scripts\activate
+
+pip install -r requirements.txt
+
+python manage.py runserver
+```
+
+### Frontend
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+---
+
+## 🎯 Sample API Request
+
+```json
+{
+    "Vehicle_Model": "Car",
+    "Maintenance_History": "Good",
+    "Reported_Issues": 1,
+    "Vehicle_Age": 4,
+    "Odometer_Reading": 64250,
+    "Days_Since_Last_Service": 92,
+    "Service_History": 8,
+    "Accident_History": 0,
+    "Fuel_Efficiency": 18.5,
+    "Tire_Condition": "Good",
+    "Brake_Condition": "Good",
+    "Battery_Status": "Good"
+}
+```
+
+---
+
+## 🎯 Sample API Response
+
+```json
+{
+    "Need_Maintenance": 0,
+    "Risk_Score": 18.4,
+    "Faults_Detected": [
+        "No Major Faults Detected"
+    ]
+}
+```
+
+---
+
+## 🔮 Future Improvements
+
+* Deep Learning models
+* Real-time IoT sensor integration
+* Cloud deployment
+* Maintenance scheduling system
+* User authentication
+* Vehicle service history database
+
+---
+
+## 👥 Team Project
+
+Developed as a collaborative Machine Learning and Full Stack project.

@@ -1,20 +1,81 @@
-__pycache__/
-*.pyc
-*.pyo
+# =====================================
+# Python
+# =====================================
 
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
 venv/
 .venv/
+env/
+ENV/
+
+# Environment Variables
+.env
+.env.*
+
+# Logs
+*.log
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# =====================================
+# Django
+# =====================================
 
 db.sqlite3
+*.sqlite3
 
-.env
+media/
+staticfiles/
+
+# =====================================
+# VS Code
+# =====================================
 
 .vscode/
-.idea/
 
-node_modules/
-dist/
-build/
+# =====================================
+# OS Files
+# =====================================
 
 .DS_Store
 Thumbs.db
+
+# =====================================
+# React / Node.js
+# =====================================
+
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =====================================
+# Machine Learning
+# =====================================
+
+# Uncomment these if you DON'T want to upload them
+# ml/model.pkl
+# ml/encoders.pkl
+# ml/vehicle_maintenance_data.csv
+
+# =====================================
+# Misc
+# =====================================
+
+*.tmp
+*.bak
