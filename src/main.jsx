@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   Activity,
@@ -30,6 +30,37 @@ import {
 import "./styles.css";
 
 const navItems = ["Home", "Features", "Predictor", "Dashboard", "Contact"];
+const API_URL = "http://127.0.0.1:8000/api/predict/";
+
+const initialVehicleData = {
+  Vehicle_Model: "Car",
+  Maintenance_History: "Good",
+  Reported_Issues: "1",
+  Vehicle_Age: "4",
+  Odometer_Reading: "64250",
+  Days_Since_Last_Service: "92",
+  Service_History: "8",
+  Accident_History: "0",
+  Fuel_Efficiency: "18.5",
+  Tire_Condition: "Good",
+  Brake_Condition: "Good",
+  Battery_Status: "Good"
+};
+
+const formFields = [
+  { name: "Vehicle_Model", label: "Vehicle Model", type: "select", options: ["Car", "SUV", "Truck", "Van", "Bus", "Motorcycle"] },
+  { name: "Maintenance_History", label: "Maintenance History", type: "select", options: ["Good", "Average", "Poor"] },
+  { name: "Reported_Issues", label: "Reported Issues", type: "number", min: "0", max: "5" },
+  { name: "Vehicle_Age", label: "Vehicle Age", type: "number", min: "0", suffix: "years" },
+  { name: "Odometer_Reading", label: "Odometer Reading", type: "number", min: "0", suffix: "km" },
+  { name: "Days_Since_Last_Service", label: "Days Since Last Service", type: "number", min: "0", suffix: "days" },
+  { name: "Service_History", label: "Service History Score", type: "number", min: "0", max: "10" },
+  { name: "Accident_History", label: "Accident History", type: "number", min: "0", max: "5" },
+  { name: "Fuel_Efficiency", label: "Fuel Efficiency", type: "number", min: "0", step: "0.1", suffix: "km/l" },
+  { name: "Tire_Condition", label: "Tire Condition", type: "select", options: ["New", "Good", "Worn Out"] },
+  { name: "Brake_Condition", label: "Brake Condition", type: "select", options: ["New", "Good", "Worn Out"] },
+  { name: "Battery_Status", label: "Battery Status", type: "select", options: ["New", "Good", "Weak"] }
+];
 
 const features = [
   { icon: Sparkles, title: "AI Maintenance Prediction", text: "Forecast component wear using mileage, age, service data, and condition signals." },
@@ -175,6 +206,45 @@ function Features() {
 }
 
 function Predictor() {
+  const [formData, setFormData] = useState(initialVehicleData);
+  const [prediction, setPrediction] = useState(null);
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState("");
+
+  const healthScore = useMemo(() => {
+    if (!prediction) return 92;
+    return Math.max(0, Math.round(100 - Number(prediction.Risk_Score || 0)));
+  }, [prediction]);
+
+  function updateField(name, value) {
+    setFormData((current) => ({ ...current, [name]: value }));
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setStatus("loading");
+    setError("");
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Prediction failed. Check the backend server and try again.");
+      }
+
+      setPrediction(data);
+      setStatus("success");
+    } catch (err) {
+      setError(err.message);
+      setStatus("error");
+    }
+  }
+
   return (
     <section id="predictor" className="section-pad predictor-layout">
       <div className="form-card glass reveal">
@@ -182,84 +252,101 @@ function Predictor() {
           <p className="eyebrow"><Activity size={15} /> Live Predictor</p>
           <h2>Vehicle Maintenance Predictor</h2>
         </div>
-        <form className="predictor-form">
-          <Field label="Vehicle Model" type="select" options={["Sedan LX", "SUV Pro", "Truck Max", "EV Prime", "Hybrid Touring"]} />
-          <Field label="Maintenance History" type="select" options={["Excellent", "Regular", "Irregular", "Poor"]} />
-          <Field label="Reported Issues" type="select" options={["None", "Minor Noise", "Warning Light", "Performance Drop", "Multiple Issues"]} />
-          <Field label="Vehicle Age" placeholder="5 years" />
-          <Field label="Odometer Reading" placeholder="64,250 km" />
-          <Field label="Days Since Last Service" placeholder="92 days" />
-          <Field label="Service History" type="select" options={["Complete", "Partial", "Missing", "Dealer Verified"]} />
-          <Field label="Accident History" type="select" options={["No Accidents", "Minor Accident", "Major Accident", "Repaired"]} />
-          <Field label="Fuel Efficiency" placeholder="34.8 mpg" />
-          <Field label="Tire Condition" type="select" options={["New", "Good", "Moderate Wear", "Replace Soon"]} />
-          <Field label="Brake Condition" type="select" options={["Excellent", "Good", "Worn", "Critical"]} />
-          <Field label="Battery Status" type="select" options={["Excellent", "Healthy", "Weak", "Critical"]} />
-          <button className="btn btn-primary form-submit" type="button">Predict Maintenance <ChevronRight size={18} /></button>
+        <form className="predictor-form" onSubmit={handleSubmit}>
+          {formFields.map((field) => (
+            <Field
+              key={field.name}
+              {...field}
+              value={formData[field.name]}
+              onChange={updateField}
+            />
+          ))}
+          {error && <p className="form-error">{error}</p>}
+          <button className="btn btn-primary form-submit" type="submit" disabled={status === "loading"}>
+            {status === "loading" ? "Predicting..." : "Predict Maintenance"} <ChevronRight size={18} />
+          </button>
         </form>
       </div>
-      <PredictionCard />
+      <PredictionCard prediction={prediction} status={status} healthScore={healthScore} />
     </section>
   );
 }
 
-function Field({ label, type = "text", options = [], placeholder }) {
+function Field({ label, name, type = "text", options = [], value, onChange, suffix, ...inputProps }) {
   return (
     <label className="field">
       <span>{label}</span>
       {type === "select" ? (
-        <select defaultValue={options[0]}>
+        <select value={value} onChange={(event) => onChange(name, event.target.value)}>
           {options.map((option) => <option key={option}>{option}</option>)}
         </select>
       ) : (
-        <input type={type} placeholder={placeholder} />
+        <div className="input-wrap">
+          <input
+            type={type}
+            value={value}
+            onChange={(event) => onChange(name, event.target.value)}
+            required
+            {...inputProps}
+          />
+          {suffix && <em>{suffix}</em>}
+        </div>
       )}
     </label>
   );
 }
 
-function PredictionCard() {
+function PredictionCard({ prediction, status, healthScore }) {
+  const riskScore = prediction ? Math.round(Number(prediction.Risk_Score || 0)) : 68;
+  const needsMaintenance = prediction ? prediction.Need_Maintenance : true;
+  const faults = prediction?.Faults_Detected?.length ? prediction.Faults_Detected : ["No live prediction yet"];
+  const chartStyle = { "--risk": `${riskScore}%` };
+
   return (
     <aside className="result-card glass reveal delay-1">
       <div className="card-header">
         <p className="eyebrow"><CheckCircle2 size={15} /> Prediction Result</p>
-        <h2>API Prediction Output</h2>
+        <h2>{status === "success" ? "Live API Output" : "Ready for Prediction"}</h2>
       </div>
-      <div className="status-pill">Need_Maintenance: Yes</div>
+      <div className={`status-pill ${needsMaintenance ? "warning" : "healthy"}`}>
+        Need Maintenance: {needsMaintenance ? "Yes" : "No"}
+      </div>
       <div className="risk-row">
-        <span>Risk_Score</span>
-        <strong>68%</strong>
+        <span>Risk Score</span>
+        <strong>{riskScore}%</strong>
       </div>
-      <div className="circular-chart" aria-label="68 percent vehicle risk score">
-        <span>68%</span>
+      <div className="circular-chart" style={chartStyle} aria-label={`${riskScore} percent vehicle risk score`}>
+        <span>{riskScore}%</span>
       </div>
       <div className="days-card">
         <Clock3 size={20} />
         <div>
-          <span>Estimated days until next service</span>
-          <strong>18 days</strong>
+          <span>Vehicle health after model review</span>
+          <strong>{healthScore}%</strong>
         </div>
       </div>
       <div className="progress-stack">
-        <Progress label="Maintenance History" value="74%" />
-        <Progress label="Reported Issues" value="62%" />
-        <Progress label="Tires" value="58%" />
-        <Progress label="Brakes" value="51%" danger />
-        <Progress label="Battery" value="86%" />
+        <Progress label="Model Risk" value={riskScore} danger={riskScore >= 60} />
+        <Progress label="Health Score" value={healthScore} />
+        <Progress label="Service Readiness" value={Math.max(10, 100 - riskScore)} />
       </div>
       <div className="recommendations">
-        <h3>Faults_Detected</h3>
-        <p>Tire wear, brake inspection required, and irregular service interval detected from the submitted vehicle data.</p>
+        <h3>Faults Detected</h3>
+        <ul className="fault-list">
+          {faults.map((fault) => <li key={fault}>{fault}</li>)}
+        </ul>
       </div>
     </aside>
   );
 }
 
 function Progress({ label, value, danger }) {
+  const percent = typeof value === "number" ? `${value}%` : value;
+
   return (
     <div className="progress-item">
-      <div><span>{label}</span><strong>{value}</strong></div>
-      <div className="progress-track"><span className={danger ? "danger" : ""} style={{ width: value }} /></div>
+      <div><span>{label}</span><strong>{percent}</strong></div>
+      <div className="progress-track"><span className={danger ? "danger" : ""} style={{ width: percent }} /></div>
     </div>
   );
 }
