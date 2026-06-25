@@ -29,27 +29,27 @@ import {
 } from "lucide-react";
 import "./styles.css";
 
-const navItems = ["Home", "Features", "Predictor", "Dashboard", "Contact"];
+const navItems = ["Home", "Features", "Predictor", "Contact"];
 const API_URL = "http://127.0.0.1:8000/api/predict/";
 
 const initialVehicleData = {
-  Vehicle_Model: "Car",
-  Maintenance_History: "Good",
-  Reported_Issues: "1",
-  Vehicle_Age: "4",
-  Odometer_Reading: "64250",
-  Days_Since_Last_Service: "92",
-  Service_History: "8",
-  Accident_History: "0",
-  Fuel_Efficiency: "18.5",
-  Tire_Condition: "Good",
-  Brake_Condition: "Good",
-  Battery_Status: "Good"
+  Vehicle_Model: "",
+  Maintenance_History: "",
+  Reported_Issues: "",
+  Vehicle_Age: "",
+  Odometer_Reading: "",
+  Days_Since_Last_Service: "",
+  Service_History: "",
+  Accident_History: "",
+  Fuel_Efficiency: "",
+  Tire_Condition: "",
+  Brake_Condition: "",
+  Battery_Status: ""
 };
 
 const formFields = [
-  { name: "Vehicle_Model", label: "Vehicle Model", type: "select", options: ["Car", "SUV", "Truck", "Van", "Bus", "Motorcycle"] },
-  { name: "Maintenance_History", label: "Maintenance History", type: "select", options: ["Good", "Average", "Poor"] },
+  { name: "Vehicle_Model", label: "Vehicle Model", type: "select", placeholder: "Select model", options: ["Car", "SUV", "Truck", "Van", "Bus", "Motorcycle"] },
+  { name: "Maintenance_History", label: "Maintenance History", type: "select", placeholder: "Select history", options: ["Good", "Average", "Poor"] },
   { name: "Reported_Issues", label: "Reported Issues", type: "number", min: "0", max: "5" },
   { name: "Vehicle_Age", label: "Vehicle Age", type: "number", min: "0", suffix: "years" },
   { name: "Odometer_Reading", label: "Odometer Reading", type: "number", min: "0", suffix: "km" },
@@ -57,17 +57,13 @@ const formFields = [
   { name: "Service_History", label: "Service History Score", type: "number", min: "0", max: "10" },
   { name: "Accident_History", label: "Accident History", type: "number", min: "0", max: "5" },
   { name: "Fuel_Efficiency", label: "Fuel Efficiency", type: "number", min: "0", step: "0.1", suffix: "km/l" },
-  { name: "Tire_Condition", label: "Tire Condition", type: "select", options: ["New", "Good", "Worn Out"] },
-  { name: "Brake_Condition", label: "Brake Condition", type: "select", options: ["New", "Good", "Worn Out"] },
-  { name: "Battery_Status", label: "Battery Status", type: "select", options: ["New", "Good", "Weak"] }
+  { name: "Tire_Condition", label: "Tire Condition", type: "select", placeholder: "Select tire status", options: ["New", "Good", "Worn Out"] },
+  { name: "Brake_Condition", label: "Brake Condition", type: "select", placeholder: "Select brake status", options: ["New", "Good", "Worn Out"] },
+  { name: "Battery_Status", label: "Battery Status", type: "select", placeholder: "Select battery status", options: ["New", "Good", "Weak"] }
 ];
 
 const features = [
   { icon: Sparkles, title: "AI Maintenance Prediction", text: "Forecast component wear using mileage, age, service data, and condition signals." },
-  { icon: BellRing, title: "Smart Alerts", text: "Get precise reminders before a small service item becomes expensive downtime." },
-  { icon: CircleDollarSign, title: "Expense Tracking", text: "Monitor service costs, compare trends, and plan upcoming maintenance budgets." },
-  { icon: Fuel, title: "Fuel Monitoring", text: "Spot efficiency drops that can reveal tire, oil, engine, or driving-pattern issues." },
-  { icon: History, title: "Service History Management", text: "Keep vehicle records structured, searchable, and ready for resale or audits." },
   { icon: Car, title: "Multi-Vehicle Support", text: "Manage daily drivers, fleet cars, vans, and EVs in one polished workspace." }
 ];
 
@@ -86,13 +82,6 @@ const dataFeatures = [
   { icon: BatteryCharging, title: "Battery Status", text: "Battery health is used to predict electrical system maintenance." }
 ];
 
-const stats = [
-  { label: "Health Score", value: "92%", icon: ShieldCheck, tone: "cyan" },
-  { label: "Avg. MPG", value: "34.8", icon: Fuel, tone: "green" },
-  { label: "Monthly Cost", value: "₹12,300", icon: CircleDollarSign, tone: "violet" },
-  { label: "Next Service", value: "18d", icon: CalendarClock, tone: "amber" }
-];
-
 function App() {
   return (
     <main className="site-shell">
@@ -100,7 +89,6 @@ function App() {
       <Hero />
       <Features />
       <Predictor />
-      <Dashboard />
       <Footer />
     </main>
   );
@@ -119,8 +107,6 @@ function Navigation() {
         ))}
       </nav>
       <div className="nav-actions">
-        <button className="btn btn-ghost">Login</button>
-        <button className="btn btn-small">Sign Up</button>
         <button className="icon-button menu-button" aria-label="Open menu"><Menu size={20} /></button>
       </div>
     </header>
@@ -212,7 +198,7 @@ function Predictor() {
   const [error, setError] = useState("");
 
   const healthScore = useMemo(() => {
-    if (!prediction) return 92;
+    if (!prediction) return null;
     return Math.max(0, Math.round(100 - Number(prediction.Risk_Score || 0)));
   }, [prediction]);
 
@@ -278,7 +264,8 @@ function Field({ label, name, type = "text", options = [], value, onChange, suff
       <span>{label}</span>
       {type === "select" ? (
         <select value={value} onChange={(event) => onChange(name, event.target.value)}>
-          {options.map((option) => <option key={option}>{option}</option>)}
+          {inputProps.placeholder && <option value="" disabled hidden>{inputProps.placeholder}</option>}
+          {options.map((option) => <option key={option} value={option}>{option}</option>)}
         </select>
       ) : (
         <div className="input-wrap">
@@ -297,38 +284,39 @@ function Field({ label, name, type = "text", options = [], value, onChange, suff
 }
 
 function PredictionCard({ prediction, status, healthScore }) {
-  const riskScore = prediction ? Math.round(Number(prediction.Risk_Score || 0)) : 68;
-  const needsMaintenance = prediction ? prediction.Need_Maintenance : true;
+  const riskScore = prediction ? Math.round(Number(prediction.Risk_Score || 0)) : null;
+  const needsMaintenance = prediction ? prediction.Need_Maintenance : null;
   const faults = prediction?.Faults_Detected?.length ? prediction.Faults_Detected : ["No live prediction yet"];
-  const chartStyle = { "--risk": `${riskScore}%` };
+  const chartStyle = { "--risk": `${riskScore ?? 0}%` };
+  const readinessValue = prediction ? Math.max(10, 100 - riskScore) : null;
 
   return (
     <aside className="result-card glass reveal delay-1">
       <div className="card-header">
         <p className="eyebrow"><CheckCircle2 size={15} /> Prediction Result</p>
-        <h2>{status === "success" ? "Live API Output" : "Ready for Prediction"}</h2>
+        <h2>{status === "success" ? "Live API Output" : status === "loading" ? "Predicting..." : "Ready for Prediction"}</h2>
       </div>
-      <div className={`status-pill ${needsMaintenance ? "warning" : "healthy"}`}>
-        Need Maintenance: {needsMaintenance ? "Yes" : "No"}
+      <div className={`status-pill ${needsMaintenance === null ? "neutral" : needsMaintenance ? "warning" : "healthy"}`}>
+        Need Maintenance: {needsMaintenance === null ? "Pending" : needsMaintenance ? "Yes" : "No"}
       </div>
       <div className="risk-row">
         <span>Risk Score</span>
-        <strong>{riskScore}%</strong>
+        <strong>{riskScore === null ? "--" : `${riskScore}%`}</strong>
       </div>
-      <div className="circular-chart" style={chartStyle} aria-label={`${riskScore} percent vehicle risk score`}>
-        <span>{riskScore}%</span>
+      <div className="circular-chart" style={chartStyle} aria-label={riskScore === null ? "Risk score pending" : `${riskScore} percent vehicle risk score`}>
+        <span>{riskScore === null ? "--" : `${riskScore}%`}</span>
       </div>
       <div className="days-card">
         <Clock3 size={20} />
         <div>
           <span>Vehicle health after model review</span>
-          <strong>{healthScore}%</strong>
+          <strong>{healthScore === null ? "--" : `${healthScore}%`}</strong>
         </div>
       </div>
       <div className="progress-stack">
         <Progress label="Model Risk" value={riskScore} danger={riskScore >= 60} />
         <Progress label="Health Score" value={healthScore} />
-        <Progress label="Service Readiness" value={Math.max(10, 100 - riskScore)} />
+        <Progress label="Service Readiness" value={readinessValue} />
       </div>
       <div className="recommendations">
         <h3>Faults Detected</h3>
@@ -341,99 +329,13 @@ function PredictionCard({ prediction, status, healthScore }) {
 }
 
 function Progress({ label, value, danger }) {
-  const percent = typeof value === "number" ? `${value}%` : value;
+  const percent = typeof value === "number" ? `${value}%` : "";
 
   return (
     <div className="progress-item">
-      <div><span>{label}</span><strong>{percent}</strong></div>
-      <div className="progress-track"><span className={danger ? "danger" : ""} style={{ width: percent }} /></div>
+      <div><span>{label}</span><strong>{percent || "--"}</strong></div>
+      <div className="progress-track"><span className={danger ? "danger" : ""} style={{ width: value === null ? 0 : percent }} /></div>
     </div>
-  );
-}
-
-function Dashboard() {
-  return (
-    <section id="dashboard" className="section-pad dashboard-section">
-      <SectionHeading
-        eyebrow="Command center"
-        title="Premium dashboard for every service decision"
-        text="Track vehicle health, cost signals, efficiency trends, and alerts from a single high-visibility interface."
-      />
-      <div className="stats-grid">
-        {stats.map(({ icon: Icon, label, value, tone }) => (
-          <article className={`stat-card glass ${tone}`} key={label}>
-            <Icon size={24} />
-            <span>{label}</span>
-            <strong>{value}</strong>
-          </article>
-        ))}
-      </div>
-      <div className="dashboard-grid">
-        <article className="panel glass command-panel">
-          <div>
-            <div className="panel-title"><Sparkles size={20} /> AI Diagnostic Overview</div>
-            <h3>Predictive model is monitoring 12 service signals in real time.</h3>
-            <p>Engine vibration, oil quality, battery voltage, tire wear, fuel efficiency, and service intervals are trending inside the healthy operating range.</p>
-          </div>
-          <div className="diagnostic-rail">
-            <span className="active"></span>
-            <span></span>
-            <span className="active"></span>
-            <span></span>
-            <span className="active"></span>
-          </div>
-        </article>
-        <article className="panel glass health-panel">
-          <div className="panel-title"><Gauge size={20} /> Vehicle Health Score</div>
-          <div className="health-meter"><span>92</span><em>Excellent</em></div>
-          <div className="health-breakdown">
-            <span>Powertrain <strong>94%</strong></span>
-            <span>Electrical <strong>89%</strong></span>
-            <span>Safety <strong>96%</strong></span>
-          </div>
-        </article>
-        <article className="panel glass">
-          <div className="panel-title"><History size={20} /> Service History Timeline</div>
-          <ol className="timeline">
-            <li><strong>Jun 2026</strong><span>Oil quality inspection completed</span><em>Optimal</em></li>
-            <li><strong>Mar 2026</strong><span>Brake pads replaced</span><em>Closed</em></li>
-            <li><strong>Dec 2025</strong><span>Battery health scan passed</span><em>Stable</em></li>
-          </ol>
-        </article>
-        <article className="panel glass chart-panel">
-          <div className="panel-title"><BarChart3 size={20} /> Maintenance Cost Analysis</div>
-          <div className="chart-kpi"><strong>₹12,300</strong><span>avg. monthly cost</span></div>
-          <div className="bar-chart">
-            {[48, 68, 36, 82, 54, 74].map((height, index) => <span key={index} style={{ height: `${height}%` }} />)}
-          </div>
-          <p>Projected cost trend remains below fleet average.</p>
-        </article>
-        <article className="panel glass chart-panel">
-          <div className="panel-title"><Fuel size={20} /> Fuel Efficiency Graph</div>
-          <svg className="line-chart" viewBox="0 0 320 150" role="img" aria-label="Fuel efficiency trend graph">
-            <defs>
-              <linearGradient id="lineFill" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#20e7ff" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#20e7ff" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <path d="M18 120 C58 94, 76 86, 112 92 C154 100, 168 38, 210 52 C248 66, 266 34, 304 24" fill="none" stroke="#20e7ff" strokeWidth="5" strokeLinecap="round" />
-            <path d="M18 120 C58 94, 76 86, 112 92 C154 100, 168 38, 210 52 C248 66, 266 34, 304 24 L304 150 L18 150 Z" fill="url(#lineFill)" />
-          </svg>
-        </article>
-        <article className="panel glass alerts-panel">
-          <div className="panel-title"><BellRing size={20} /> Upcoming Service Alerts</div>
-          <div className="alert-item priority"><Gauge size={18} /><span><strong>Tire rotation</strong> due in 9 days</span><em>Medium</em></div>
-          <div className="alert-item"><Wrench size={18} /><span><strong>Oil replacement</strong> due in 18 days</span><em>Planned</em></div>
-          <div className="alert-item"><BatteryCharging size={18} /><span><strong>Battery check</strong> due in 31 days</span><em>Low</em></div>
-        </article>
-        <article className="panel glass service-panel">
-          <div className="panel-title"><CalendarClock size={20} /> Service Readiness</div>
-          <div className="readiness-score">18<span>days</span></div>
-          <p>Best appointment window: Jul 12 to Jul 16. Parts availability is high.</p>
-        </article>
-      </div>
-    </section>
   );
 }
 
