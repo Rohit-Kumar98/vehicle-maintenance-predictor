@@ -1,0 +1,65 @@
+{
+  "Vehicle_Model": 0,
+  "Maintenance_History": 0,
+  "Reported_Issues": 0,
+  "Vehicle_Age": 2,
+  "Odometer_Reading": 15000,
+  "Days_Since_Last_Service": 30,
+  "Service_History": 5,
+  "Accident_History": 0,
+  "Fuel_Efficiency": 18,
+  "Tire_Condition": 0,
+  "Brake_Condition": 0,
+  "Battery_Status": 0
+}
+
+
+
+{
+  "Vehicle_Model": 1,
+  "Maintenance_History": 1,
+  "Reported_Issues": 1,
+  "Vehicle_Age": 5,
+  "Odometer_Reading": 50000,
+  "Days_Since_Last_Service": 180,
+  "Service_History": 3,
+  "Accident_History": 0,
+  "Fuel_Efficiency": 14,
+  "Tire_Condition": 1,
+  "Brake_Condition": 1,
+  "Battery_Status": 1
+}
+
+
+
+{
+  "Vehicle_Model": 2,
+  "Maintenance_History": 2,
+  "Reported_Issues": 3,
+  "Vehicle_Age": 10,
+  "Odometer_Reading": 120000,
+  "Days_Since_Last_Service": 400,
+  "Service_History": 1,
+  "Accident_History": 2,
+  "Fuel_Efficiency": 8,
+  "Tire_Condition": 2,
+  "Brake_Condition": 2,
+  "Battery_Status": 2
+}
+
+
+
+{
+  "Vehicle_Model": 1,
+  "Maintenance_History": 2,
+  "Reported_Issues": 4,
+  "Vehicle_Age": 15,
+  "Odometer_Reading": 200000,
+  "Days_Since_Last_Service": 800,
+  "Service_History": 0,
+  "Accident_History": 3,
+  "Fuel_Efficiency": 5,
+  "Tire_Condition": 2,
+  "Brake_Condition": 2,
+  "Battery_Status": 2
+}
