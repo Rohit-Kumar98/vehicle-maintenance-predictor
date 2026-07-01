@@ -118,7 +118,7 @@ function Hero() {
     <section id="home" className="hero section-pad">
       <div className="hero-copy reveal">
         <p className="eyebrow"><Sparkles size={16} /> AI vehicle intelligence platform</p>
-        <h1>Predict Vehicle Maintenance Before Problems Happen</h1>
+        <h1>Predict Vehicle Maintanance Before Problems Happen</h1>
         <p className="hero-subtitle">
           AI-powered vehicle health prediction using service history, mileage,
           fuel efficiency, and maintenance records.
@@ -352,7 +352,7 @@ function Footer() {
             <a aria-label="Instagram" href="#"><Instagram size={18} /></a>
             <a aria-label="Facebook" href="#"><Facebook size={18} /></a>
           </div>
-        </div>
+        </div>  
         <div>
           <h3>Quick Links</h3>
           {navItems.map((item) => <a key={item} href={`#${item.toLowerCase()}`}>{item}</a>)}

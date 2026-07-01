@@ -1,48 +1,92 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+import numpy as np
 import joblib
 
-# Load dataset
-df = pd.read_csv("vehicle_maintenance_data.csv")
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score
 
-# Drop date column if exists
-if "Last_Service_Date" in df.columns:
-    df.drop("Last_Service_Date", axis=1, inplace=True)
+import sys
+import os
 
-# Encode categorical columns
-categorical_cols = df.select_dtypes(include=["object"]).columns
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "backend"))
 
-le_dict = {}
+from logistic_regression import LogisticRegressionScratch
 
-for col in categorical_cols:
-    le = LabelEncoder()
-    df[col] = le.fit_transform(df[col])
-    le_dict[col] = le
 
-# Split features and target
-X = df.drop("Need_Maintenance", axis=1)
-y = df["Need_Maintenance"]
+df = pd.read_csv(r"C:\Users\ROHIT\Downloads\vehicle_maintenance_data - Copy.csv")
 
-# Train-test split
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+categorical_columns = [
+    "Vehicle_Model",
+    "Maintenance_History",
+    "Tire_Condition",
+    "Brake_Condition",
+    "Battery_Status"
+]
+
+encoders = {}
+
+for col in categorical_columns:
+
+    encoder = LabelEncoder()
+
+    df[col] = encoder.fit_transform(df[col])
+
+    encoders[col] = encoder
+
+joblib.dump(encoders, "encoders.pkl")
+
+X = df[
+    [
+        "Vehicle_Model",
+        "Maintenance_History",
+        "Reported_Issues",
+        "Vehicle_Age",
+        "Odometer_Reading",
+        "Days_Since_Last_Service",
+        "Accident_History",
+        "Fuel_Efficiency",
+        "Tire_Condition",
+        "Brake_Condition",
+        "Battery_Status"
+    ]
+].values
+
+
+y = df["Need_Maintenance"].values
+
+
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+
+mean = X_train.mean(axis=0)
+std = X_train.std(axis=0)
+
+X_train = (X_train - mean) / std
+X_test = (X_test - mean) / std
+
+joblib.dump(
+    {
+        "mean": mean,
+        "std": std
+    },
+    "scaler.pkl"
 )
 
-# Model
-model = RandomForestClassifier(n_estimators=200, random_state=42)
+
+model = LogisticRegressionScratch(
+    learning_rate=0.001,
+    epochs=1000
+)
+
 model.fit(X_train, y_train)
 
-# Predictions
-y_pred = model.predict(X_test)
+predictions = model.predict(X_test)
 
-# Accuracy
-print("Accuracy:", accuracy_score(y_test, y_pred))
+accuracy = accuracy_score(y_test, predictions)
 
-# Save model + encoders
+print("\nAccuracy:", round(accuracy * 100, 2), "%")
+
 joblib.dump(model, "model.pkl")
-joblib.dump(le_dict, "encoders.pkl")
 
-print("Model saved successfully!")
+print("\nModel saved successfully!")

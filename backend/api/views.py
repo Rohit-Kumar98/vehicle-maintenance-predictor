@@ -2,12 +2,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .ml_model import predict
 from .diagnosis import detect_faults
+
 import joblib
 import os
 from django.conf import settings
 
 
-# Load encoders once when Django starts
 BASE_DIR = settings.BASE_DIR
 encoder_path = os.path.join(BASE_DIR, "..", "ml", "encoders.pkl")
 encoders = joblib.load(encoder_path)
@@ -19,7 +19,6 @@ def predict_view(request):
     try:
 
         data = request.data.copy()
-
 
         categorical_fields = [
             "Vehicle_Model",
@@ -35,13 +34,10 @@ def predict_view(request):
                     encoders[field].transform([data[field]])[0]
                 )
 
-
-
         data["Reported_Issues"] = int(data["Reported_Issues"])
         data["Vehicle_Age"] = int(data["Vehicle_Age"])
         data["Odometer_Reading"] = float(data["Odometer_Reading"])
         data["Days_Since_Last_Service"] = float(data["Days_Since_Last_Service"])
-        data["Service_History"] = int(data["Service_History"])
         data["Accident_History"] = int(data["Accident_History"])
         data["Fuel_Efficiency"] = float(data["Fuel_Efficiency"])
 
@@ -66,7 +62,7 @@ def predict_view(request):
 
         if data["Days_Since_Last_Service"] < 0:
             return Response(
-                {"error": "Days since service cannot be negative"},
+                {"error": "Days since last service cannot be negative"},
                 status=400
             )
 
@@ -78,7 +74,6 @@ def predict_view(request):
             data["Vehicle_Age"],
             data["Odometer_Reading"],
             data["Days_Since_Last_Service"],
-            data["Service_History"],
             data["Accident_History"],
             data["Fuel_Efficiency"],
             data["Tire_Condition"],
@@ -87,6 +82,7 @@ def predict_view(request):
         ]
 
         result = predict(features)
+
         faults = detect_faults(features)
 
         return Response({

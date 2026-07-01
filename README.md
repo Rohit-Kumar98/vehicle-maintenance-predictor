@@ -2,19 +2,20 @@
 
 ## 📌 Overview
 
-AutoCare AI is a machine learning-based vehicle maintenance prediction system that predicts whether a vehicle requires maintenance based on its condition and usage history.
+AutoCare AI is a machine learning-based vehicle maintenance prediction system that predicts whether a vehicle requires maintenance based on vehicle condition, usage patterns, and maintenance history.
 
-The system also generates:
+The system provides:
 
-* Maintenance Risk Score (0–100%)
-* Fault Detection Reports
+* Maintenance Prediction (Yes/No)
+* Risk Score (0–100%)
+* Fault Detection and Diagnosis
 * Vehicle Health Analysis
 
-Built using:
+The project is built using:
 
-* React + Vite (Frontend)
-* Django REST Framework (Backend)
-* Random Forest Classifier (Machine Learning)
+* **React + Vite** (Frontend)
+* **Django REST Framework** (Backend)
+* **Custom Logistic Regression implemented from scratch using NumPy** (Machine Learning)
 
 ---
 
@@ -22,10 +23,12 @@ Built using:
 
 ### Machine Learning
 
-* Random Forest maintenance prediction
-* Risk score generation
-* Automatic fault detection
-* Multiple vehicle types supported
+* Custom Binary Logistic Regression implementation
+* Gradient Descent optimization
+* Binary Cross-Entropy loss function
+* Feature normalization using standard scaling
+* Probability-based risk score generation
+* Model accuracy: **87.54%**
 
 ### Backend
 
@@ -33,13 +36,40 @@ Built using:
 * Input validation
 * CORS support
 * Encoder-based categorical processing
+* Automatic fault detection
 
 ### Frontend
 
-* Modern React UI
-* Interactive dashboard
-* Real-time predictions
-* Vehicle health visualization
+* Modern React interface
+* Interactive prediction dashboard
+* Real-time API communication
+* User-friendly vehicle maintenance analysis
+
+---
+
+## 🧠 Machine Learning Implementation
+
+Instead of using pre-built classifiers such as Random Forest, this project implements **Binary Logistic Regression from scratch using NumPy**.
+
+The implementation includes:
+
+* Sigmoid Activation Function
+* Gradient Descent Optimization
+* Binary Cross-Entropy Loss
+* Feature Scaling
+* Probability-Based Predictions
+
+### Sigmoid Function
+
+```math
+σ(z) = 1 / (1 + e^(-z))
+```
+
+### Gradient Descent Update Rule
+
+```math
+w = w - α × gradient
+```
 
 ---
 
@@ -50,7 +80,13 @@ vehicle-maintenance-predictor/
 
 ├── backend/
 │   ├── api/
+│   │   ├── views.py
+│   │   ├── ml_model.py
+│   │   ├── diagnosis.py
+│   │   └── urls.py
+│   │
 │   ├── backend/
+│   ├── logistic_regression.py
 │   ├── manage.py
 │   └── requirements.txt
 │
@@ -62,9 +98,11 @@ vehicle-maintenance-predictor/
 ├── ml/
 │   ├── train.py
 │   ├── model.pkl
+│   ├── scaler.pkl
 │   ├── encoders.pkl
 │   └── vehicle_maintenance_data.csv
 │
+├── .gitignore
 └── README.md
 ```
 
@@ -72,7 +110,7 @@ vehicle-maintenance-predictor/
 
 ## 📊 Dataset Features
 
-The model uses:
+The model uses the following input features:
 
 * Vehicle Model
 * Maintenance History
@@ -80,18 +118,21 @@ The model uses:
 * Vehicle Age
 * Odometer Reading
 * Days Since Last Service
-* Service History Score
 * Accident History
 * Fuel Efficiency
 * Tire Condition
 * Brake Condition
 * Battery Status
 
+### Target Variable
+
+* Need Maintenance (0 or 1)
+
 ---
 
 ## 🔧 Installation
 
-### Backend
+### Backend Setup
 
 ```bash
 cd backend
@@ -105,7 +146,9 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
-### Frontend
+---
+
+### Frontend Setup
 
 ```bash
 cd frontend
@@ -127,7 +170,6 @@ npm run dev
     "Vehicle_Age": 4,
     "Odometer_Reading": 64250,
     "Days_Since_Last_Service": 92,
-    "Service_History": 8,
     "Accident_History": 0,
     "Fuel_Efficiency": 18.5,
     "Tire_Condition": "Good",
@@ -152,17 +194,69 @@ npm run dev
 
 ---
 
+## 🔍 Fault Detection Rules
+
+The system automatically identifies:
+
+* Worn Tires
+* Brake Degradation
+* Weak Battery
+* Service Overdue
+* Critical Service Overdue
+* High Mileage Wear
+* Engine Overhaul Recommendation
+* Poor Fuel Efficiency
+* Critical Fuel Inefficiency
+* Aging Vehicle
+* Vehicle Near End of Life
+* Multiple Mechanical Issues
+* Frequent Accident History
+
+---
+
+## 📈 Model Performance
+
+| Metric          | Value                      |
+| --------------- | -------------------------- |
+| Algorithm       | Custom Logistic Regression |
+| Accuracy        | 87.54%                     |
+| Optimization    | Gradient Descent           |
+| Loss Function   | Binary Cross-Entropy       |
+| Feature Scaling | Standard Normalization     |
+
+---
+
 ## 🔮 Future Improvements
 
 * Deep Learning models
 * Real-time IoT sensor integration
 * Cloud deployment
-* Maintenance scheduling system
-* User authentication
+* Vehicle maintenance scheduling
+* User authentication system
 * Vehicle service history database
+* Mobile application support
 
 ---
 
 ## 👥 Team Project
 
-Developed as a collaborative Machine Learning and Full Stack project.
+Developed as a collaborative Full Stack and Machine Learning project.
+
+### Technologies Used
+
+* Python
+* NumPy
+* Pandas
+* Django
+* Django REST Framework
+* React
+* Vite
+* JavaScript
+* HTML
+* CSS
+
+---
+
+## 📜 License
+
+This project is intended for educational and internship purposes.
