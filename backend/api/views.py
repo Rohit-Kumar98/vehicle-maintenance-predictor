@@ -13,6 +13,31 @@ encoder_path = os.path.join(BASE_DIR, "..", "ml", "encoders.pkl")
 encoders = joblib.load(encoder_path)
 
 
+def get_maintenance_summary(need_maintenance, risk_score):
+    if need_maintenance or risk_score >= 70:
+        return {
+            "status": "Maintenance Required",
+            "recommendation": "Immediate service is recommended to prevent vehicle failure."
+        }
+
+    if risk_score >= 40:
+        return {
+            "status": "Service Soon",
+            "recommendation": "Schedule a service visit soon and inspect flagged components."
+        }
+
+    if risk_score >= 20:
+        return {
+            "status": "Monitor Vehicle",
+            "recommendation": "Routine inspection is recommended during the next service cycle."
+        }
+
+    return {
+        "status": "Healthy Vehicle",
+        "recommendation": "Continue regular maintenance and monitor normal service intervals."
+    }
+
+
 @api_view(['POST'])
 def predict_view(request):
 
@@ -38,6 +63,7 @@ def predict_view(request):
         data["Vehicle_Age"] = int(data["Vehicle_Age"])
         data["Odometer_Reading"] = float(data["Odometer_Reading"])
         data["Days_Since_Last_Service"] = float(data["Days_Since_Last_Service"])
+        data["Service_History"] = int(data.get("Service_History") or 5)
         data["Accident_History"] = int(data["Accident_History"])
         data["Fuel_Efficiency"] = float(data["Fuel_Efficiency"])
 
@@ -84,10 +110,16 @@ def predict_view(request):
         result = predict(features)
 
         faults = detect_faults(features)
+        summary = get_maintenance_summary(
+            result["prediction"],
+            result["risk_score"]
+        )
 
         return Response({
             "Need_Maintenance": result["prediction"],
             "Risk_Score": result["risk_score"],
+            "Maintenance_Status": summary["status"],
+            "Recommendation": summary["recommendation"],
             "Faults_Detected": faults
         })
 

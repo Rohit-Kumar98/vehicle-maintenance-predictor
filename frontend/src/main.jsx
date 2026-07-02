@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   Activity,
@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import "./styles.css";
 
-const navItems = ["Home", "Features", "Predictor", "Contact"];
+const navItems = ["Home", "Predictor", "Features", "Contact"];
 const API_URL = "http://127.0.0.1:8000/api/predict/";
 
 const initialVehicleData = {
@@ -39,7 +39,6 @@ const initialVehicleData = {
   Vehicle_Age: "",
   Odometer_Reading: "",
   Days_Since_Last_Service: "",
-  Service_History: "",
   Accident_History: "",
   Fuel_Efficiency: "",
   Tire_Condition: "",
@@ -54,7 +53,6 @@ const formFields = [
   { name: "Vehicle_Age", label: "Vehicle Age", type: "number", min: "0", suffix: "years" },
   { name: "Odometer_Reading", label: "Odometer Reading", type: "number", min: "0", suffix: "km" },
   { name: "Days_Since_Last_Service", label: "Days Since Last Service", type: "number", min: "0", suffix: "days" },
-  { name: "Service_History", label: "Service History Score", type: "number", min: "0", max: "10" },
   { name: "Accident_History", label: "Accident History", type: "number", min: "0", max: "5" },
   { name: "Fuel_Efficiency", label: "Fuel Efficiency", type: "number", min: "0", step: "0.1", suffix: "km/l" },
   { name: "Tire_Condition", label: "Tire Condition", type: "select", placeholder: "Select tire status", options: ["New", "Good", "Worn Out"] },
@@ -74,7 +72,6 @@ const dataFeatures = [
   { icon: Clock3, title: "Vehicle Age", text: "Vehicle age helps calculate expected wear and replacement timelines." },
   { icon: Gauge, title: "Odometer Reading", text: "Mileage trends enhance accuracy for engine and chassis maintenance." },
   { icon: CalendarClock, title: "Days Since Last Service", text: "Service intervals show the remaining useful life of key systems." },
-  { icon: History, title: "Service History", text: "Verified record completeness improves predictive confidence." },
   { icon: ShieldCheck, title: "Accident History", text: "Impact and repair history affect safety-critical maintenance alerts." },
   { icon: Fuel, title: "Fuel Efficiency", text: "Efficiency drops can signal engine, drivetrain, or tire issues." },
   { icon: Wrench, title: "Tire Condition", text: "Tire health is monitored to avoid handling or alignment failures." },
@@ -87,8 +84,8 @@ function App() {
     <main className="site-shell">
       <Navigation />
       <Hero />
-      <Features />
       <Predictor />
+      <Features />
       <Footer />
     </main>
   );
@@ -114,31 +111,110 @@ function Navigation() {
 }
 
 function Hero() {
+  const heroRef = useRef(null);
+  const headingWords = "Predict Vehicle Maintenance Before Problems Happen".split(" ");
+  const hudLabels = [
+    { icon: CheckCircle2, label: "Engine", value: "✓ Healthy", className: "hud-engine" },
+    { icon: BatteryCharging, label: "Battery", value: "92%", className: "hud-battery" },
+    { icon: Fuel, label: "Fuel Efficiency", value: "Good", className: "hud-fuel" },
+    { icon: Gauge, label: "Tire Pressure", value: "Normal", className: "hud-tire" },
+    { icon: Wrench, label: "Next Service", value: "18 Days", className: "hud-service" }
+  ];
+
+  function handleHeroPointerMove(event) {
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    const bounds = hero.getBoundingClientRect();
+    const x = event.clientX - bounds.left;
+    const y = event.clientY - bounds.top;
+    const moveX = ((x / bounds.width) - 0.5).toFixed(3);
+    const moveY = ((y / bounds.height) - 0.5).toFixed(3);
+
+    hero.style.setProperty("--mouse-x", `${x}px`);
+    hero.style.setProperty("--mouse-y", `${y}px`);
+    hero.style.setProperty("--parallax-x", moveX);
+    hero.style.setProperty("--parallax-y", moveY);
+    hero.style.setProperty("--tilt-x", `${(-moveY * 5).toFixed(2)}deg`);
+    hero.style.setProperty("--tilt-y", `${(moveX * 7).toFixed(2)}deg`);
+  }
+
+  function handleRipple(event) {
+    const button = event.currentTarget;
+    const ripple = document.createElement("span");
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+
+    ripple.className = "btn-ripple";
+    ripple.style.width = `${size}px`;
+    ripple.style.height = `${size}px`;
+    ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
+    ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
+    button.appendChild(ripple);
+    window.setTimeout(() => ripple.remove(), 650);
+  }
+
   return (
-    <section id="home" className="hero section-pad">
-      <div className="hero-copy reveal">
-        <p className="eyebrow"><Sparkles size={16} /> AI vehicle intelligence platform</p>
-        <h1>Predict Vehicle Maintanance Before Problems Happen</h1>
+    <section id="home" className="hero section-pad" ref={heroRef} onPointerMove={handleHeroPointerMove}>
+      <div className="hero-boot" aria-hidden="true">
+        <div className="boot-grid" />
+        <div className="boot-scanner" />
+        <div className="boot-panel">
+          <span className="boot-kicker">AutoCare neural interface</span>
+          <strong>Initializing AutoCare AI...</strong>
+          <div className="boot-ring"><span>100%</span></div>
+        </div>
+      </div>
+      <div className="hero-ambient" aria-hidden="true">
+        <span className="blob blob-one" />
+        <span className="blob blob-two" />
+        <span className="light-beam beam-one" />
+        <span className="light-beam beam-two" />
+        {Array.from({ length: 18 }).map((_, index) => (
+          <span className={`particle particle-${index + 1}`} key={index} />
+        ))}
+      </div>
+      <div className="hero-copy hero-parallax">
+        <p className="eyebrow hero-badge"><Sparkles size={16} /> AI vehicle intelligence platform</p>
+        <h1 className="hero-title" aria-label="Predict Vehicle Maintenance Before Problems Happen">
+          {headingWords.map((word, index) => (
+            <span className="word-reveal" style={{ "--word-delay": `${220 + index * 95}ms` }} key={`${word}-${index}`}>
+              {word}
+            </span>
+          ))}
+        </h1>
         <p className="hero-subtitle">
           AI-powered vehicle health prediction using service history, mileage,
           fuel efficiency, and maintenance records.
         </p>
         <div className="hero-actions">
-          <a className="btn btn-primary" href="#predictor">Predict Now <ChevronRight size={18} /></a>
+          <a className="btn btn-primary btn-cinematic" href="#predictor" onClick={handleRipple}>Predict Now <ChevronRight size={18} /></a>
           <a className="btn btn-outline" href="#features">Learn More</a>
         </div>
-        <div className="hero-metrics glass">
-          <div><strong>97%</strong><span>prediction confidence</span></div>
-          <div><strong>24/7</strong><span>health monitoring</span></div>
-          <div><strong>38%</strong><span>lower surprise repairs</span></div>
-        </div>
       </div>
-      <div className="hero-visual reveal delay-1" aria-label="Futuristic 3D electric car illustration">
+      <div className="hero-visual" aria-label="Futuristic 3D electric car illustration">
         <div className="orbital-ring ring-one" />
         <div className="orbital-ring ring-two" />
+        <div className="hud-core" aria-hidden="true">
+          <span className="hud-ring hud-ring-a" />
+          <span className="hud-ring hud-ring-b" />
+          <span className="hud-ring hud-ring-c" />
+          <span className="radar-pulse" />
+          <span className="data-line line-a" />
+          <span className="data-line line-b" />
+          <span className="data-line line-c" />
+        </div>
         <div className="car-stage">
           <div className="scan-line" />
           <div className="car-illustration">
+            <div className="wireframe-car" aria-hidden="true">
+              <span className="wire wire-roof" />
+              <span className="wire wire-body" />
+              <span className="wire wire-base" />
+              <span className="wire wire-wheel wire-left" />
+              <span className="wire wire-wheel wire-right" />
+            </div>
+            <div className="car-reflection" />
             <div className="car-roof" />
             <div className="car-body" />
             <div className="car-light light-left" />
@@ -147,9 +223,15 @@ function Hero() {
             <div className="wheel wheel-right"><span /></div>
             <div className="car-shadow" />
           </div>
-          <div className="floating-chip chip-a"><Gauge size={18} /> 92%</div>
-          <div className="floating-chip chip-b"><BatteryCharging size={18} /> Stable</div>
-          <div className="floating-chip chip-c"><Wrench size={18} /> 18 days</div>
+          <div className="holo-labels">
+            {hudLabels.map(({ icon: Icon, label, value, className }) => (
+              <div className={`floating-chip ${className}`} key={label}>
+                <Icon size={18} />
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -286,6 +368,8 @@ function Field({ label, name, type = "text", options = [], value, onChange, suff
 function PredictionCard({ prediction, status, healthScore }) {
   const riskScore = prediction ? Math.round(Number(prediction.Risk_Score || 0)) : null;
   const needsMaintenance = prediction ? prediction.Need_Maintenance : null;
+  const maintenanceStatus = prediction?.Maintenance_Status || "Awaiting prediction";
+  const recommendation = prediction?.Recommendation || "Submit vehicle details to receive a maintenance recommendation.";
   const faults = prediction?.Faults_Detected?.length ? prediction.Faults_Detected : ["No live prediction yet"];
   const chartStyle = { "--risk": `${riskScore ?? 0}%` };
   const readinessValue = prediction ? Math.max(10, 100 - riskScore) : null;
@@ -298,6 +382,16 @@ function PredictionCard({ prediction, status, healthScore }) {
       </div>
       <div className={`status-pill ${needsMaintenance === null ? "neutral" : needsMaintenance ? "warning" : "healthy"}`}>
         Need Maintenance: {needsMaintenance === null ? "Pending" : needsMaintenance ? "Yes" : "No"}
+      </div>
+      <div className="maintenance-summary">
+        <div>
+          <span>Maintenance Status</span>
+          <strong>{maintenanceStatus}</strong>
+        </div>
+        <div>
+          <span>Recommendation</span>
+          <p>{recommendation}</p>
+        </div>
       </div>
       <div className="risk-row">
         <span>Risk Score</span>
