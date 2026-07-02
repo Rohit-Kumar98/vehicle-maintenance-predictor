@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 from .ml_model import predict
 from .diagnosis import detect_faults
 
@@ -8,123 +9,96 @@ import os
 from django.conf import settings
 
 
+# =========================
+# LOAD ENCODERS
+# =========================
+
 BASE_DIR = settings.BASE_DIR
-encoder_path = os.path.join(BASE_DIR, "..", "ml", "encoders.pkl")
-encoders = joblib.load(encoder_path)
+
+encoders_path = os.path.join(BASE_DIR, "..", "ml", "encoders.pkl")
+
+encoders = joblib.load(encoders_path)
 
 
-def get_maintenance_summary(need_maintenance, risk_score):
-    if need_maintenance or risk_score >= 70:
-        return {
-            "status": "Maintenance Required",
-            "recommendation": "Immediate service is recommended to prevent vehicle failure."
-        }
-
-    if risk_score >= 40:
-        return {
-            "status": "Service Soon",
-            "recommendation": "Schedule a service visit soon and inspect flagged components."
-        }
-
-    if risk_score >= 20:
-        return {
-            "status": "Monitor Vehicle",
-            "recommendation": "Routine inspection is recommended during the next service cycle."
-        }
-
-    return {
-        "status": "Healthy Vehicle",
-        "recommendation": "Continue regular maintenance and monitor normal service intervals."
-    }
-
-
-@api_view(['POST'])
+@api_view(["POST"])
 def predict_view(request):
 
-    try:
+    data = request.data
 
-        data = request.data.copy()
+    vehicle_model = encoders["Vehicle_Model"].transform(
+        [data["Vehicle_Model"]]
+    )[0]
 
-        categorical_fields = [
-            "Vehicle_Model",
-            "Maintenance_History",
-            "Tire_Condition",
-            "Brake_Condition",
-            "Battery_Status"
-        ]
+    maintenance_history = encoders["Maintenance_History"].transform(
+        [data["Maintenance_History"]]
+    )[0]
 
-        for field in categorical_fields:
-            if isinstance(data[field], str):
-                data[field] = int(
-                    encoders[field].transform([data[field]])[0]
-                )
+    tire_condition = encoders["Tire_Condition"].transform(
+        [data["Tire_Condition"]]
+    )[0]
 
-        data["Reported_Issues"] = int(data["Reported_Issues"])
-        data["Vehicle_Age"] = int(data["Vehicle_Age"])
-        data["Odometer_Reading"] = float(data["Odometer_Reading"])
-        data["Days_Since_Last_Service"] = float(data["Days_Since_Last_Service"])
-        data["Service_History"] = int(data.get("Service_History") or 5)
-        data["Accident_History"] = int(data["Accident_History"])
-        data["Fuel_Efficiency"] = float(data["Fuel_Efficiency"])
+    brake_condition = encoders["Brake_Condition"].transform(
+        [data["Brake_Condition"]]
+    )[0]
 
+    battery_status = encoders["Battery_Status"].transform(
+        [data["Battery_Status"]]
+    )[0]
 
-        if data["Vehicle_Age"] < 0:
-            return Response(
-                {"error": "Vehicle age cannot be negative"},
-                status=400
-            )
+    features = [
+        vehicle_model,
+        maintenance_history,
+        int(data["Reported_Issues"]),
+        int(data["Vehicle_Age"]),
+        float(data["Odometer_Reading"]),
+        int(data["Days_Since_Last_Service"]),
+        int(data["Accident_History"]),
+        float(data["Fuel_Efficiency"]),
+        tire_condition,
+        brake_condition,
+        battery_status
+    ]
 
-        if data["Odometer_Reading"] < 0:
-            return Response(
-                {"error": "Invalid odometer reading"},
-                status=400
-            )
+    result = predict(features)
+    faults = detect_faults(features)
 
-        if data["Fuel_Efficiency"] <= 0:
-            return Response(
-                {"error": "Fuel efficiency must be greater than 0"},
-                status=400
-            )
+    risk_score = result["risk_score"]
 
-        if data["Days_Since_Last_Service"] < 0:
-            return Response(
-                {"error": "Days since last service cannot be negative"},
-                status=400
-            )
-
-
-        features = [
-            data["Vehicle_Model"],
-            data["Maintenance_History"],
-            data["Reported_Issues"],
-            data["Vehicle_Age"],
-            data["Odometer_Reading"],
-            data["Days_Since_Last_Service"],
-            data["Accident_History"],
-            data["Fuel_Efficiency"],
-            data["Tire_Condition"],
-            data["Brake_Condition"],
-            data["Battery_Status"]
-        ]
-
-        result = predict(features)
-
-        faults = detect_faults(features)
-        summary = get_maintenance_summary(
-            result["prediction"],
-            result["risk_score"]
+    if risk_score < 20:
+        status = "Vehicle Healthy"
+        recommendation = (
+            "No immediate maintenance required. Continue regular servicing."
         )
 
-        return Response({
-            "Need_Maintenance": result["prediction"],
-            "Risk_Score": result["risk_score"],
-            "Maintenance_Status": summary["status"],
-            "Recommendation": summary["recommendation"],
-            "Faults_Detected": faults
-        })
-
-    except Exception as e:
-        return Response(
-            {"error": str(e)},
-            status=500
+    elif risk_score < 40:
+        status = "Monitor Vehicle"
+        recommendation = (
+            "Routine inspection is recommended during the next service cycle."
         )
+
+    elif risk_score < 60:
+        status = "Suggested Maintenance"
+        recommendation = (
+            "Some components should be checked soon to prevent future issues."
+        )
+
+    elif risk_score < 80:
+        status = "Maintenance Required"
+        recommendation = (
+            "Vehicle servicing is recommended within the next few days."
+        )
+
+    else:
+        status = "Immediate Maintenance"
+        recommendation = (
+            "Urgent maintenance is required. Avoid long trips until the vehicle is inspected."
+        )
+
+
+    return Response({
+        "Need_Maintenance": result["prediction"],
+        "Risk_Score": risk_score,
+        "Maintenance_Status": status,
+        "Recommendation": recommendation,
+        "Faults_Detected": faults
+    })
