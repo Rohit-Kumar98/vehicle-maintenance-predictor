@@ -219,7 +219,7 @@ The system automatically identifies:
 | Metric          | Value                      |
 | --------------- | -------------------------- |
 | Algorithm       | Custom Logistic Regression |
-| Accuracy        | 87.54%                     |
+| Accuracy        | 83.06%                     |
 | Optimization    | Gradient Descent           |
 | Loss Function   | Binary Cross-Entropy       |
 | Feature Scaling | Standard Normalization     |

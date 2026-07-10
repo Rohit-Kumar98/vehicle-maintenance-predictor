@@ -1,61 +1,161 @@
-{
-  "Vehicle_Model": 0,
-  "Maintenance_History": 0,
-  "Reported_Issues": 0,
-  "Vehicle_Age": 2,
-  "Odometer_Reading": 15000,
-  "Days_Since_Last_Service": 30,
-  "Accident_History": 0,
-  "Fuel_Efficiency": 18,
-  "Tire_Condition": 0,
-  "Brake_Condition": 0,
-  "Battery_Status": 0
-}
+Vehicle Maintenance Predictor - Test JSONs
 
+Test 1 - Excellent Condition
 
+    {
+        "Vehicle_Model": "Car",
+        "Maintenance_History": "Good",
+        "Reported_Issues": 0,
+        "Vehicle_Age": 1,
+        "Odometer_Reading": 4000,
+        "Days_Since_Last_Service": 30,
+        "Accident_History": 0,
+        "Fuel_Efficiency": 22,
+        "Tire_Condition": "New",
+        "Brake_Condition": "New",
+        "Battery_Status": "New"
+    }
 
-{
-  "Vehicle_Model": 1,
-  "Maintenance_History": 1,
-  "Reported_Issues": 1,
-  "Vehicle_Age": 5,
-  "Odometer_Reading": 50000,
-  "Days_Since_Last_Service": 180,
-  "Accident_History": 0,
-  "Fuel_Efficiency": 14,
-  "Tire_Condition": 1,
-  "Brake_Condition": 1,
-  "Battery_Status": 1
-}
+Test 2 - Healthy SUV
 
+    {
+        "Vehicle_Model": "SUV",
+        "Maintenance_History": "Good",
+        "Reported_Issues": 1,
+        "Vehicle_Age": 3,
+        "Odometer_Reading": 28000,
+        "Days_Since_Last_Service": 90,
+        "Accident_History": 0,
+        "Fuel_Efficiency": 16,
+        "Tire_Condition": "Good",
+        "Brake_Condition": "Good",
+        "Battery_Status": "Good"
+    }
 
+Test 3 - Moderate Risk
 
-{
-  "Vehicle_Model": 2,
-  "Maintenance_History": 2,
-  "Reported_Issues": 3,
-  "Vehicle_Age": 10,
-  "Odometer_Reading": 120000,
-  "Days_Since_Last_Service": 400,
-  "Accident_History": 2,
-  "Fuel_Efficiency": 8,
-  "Tire_Condition": 2,
-  "Brake_Condition": 2,
-  "Battery_Status": 2
-}
+    {
+        "Vehicle_Model": "Car",
+        "Maintenance_History": "Average",
+        "Reported_Issues": 2,
+        "Vehicle_Age": 5,
+        "Odometer_Reading": 65000,
+        "Days_Since_Last_Service": 180,
+        "Accident_History": 1,
+        "Fuel_Efficiency": 15,
+        "Tire_Condition": "Good",
+        "Brake_Condition": "Good",
+        "Battery_Status": "Good"
+    }
 
+Test 4 - Weak Battery
 
+    {
+        "Vehicle_Model": "Car",
+        "Maintenance_History": "Good",
+        "Reported_Issues": 1,
+        "Vehicle_Age": 4,
+        "Odometer_Reading": 50000,
+        "Days_Since_Last_Service": 120,
+        "Accident_History": 0,
+        "Fuel_Efficiency": 18,
+        "Tire_Condition": "Good",
+        "Brake_Condition": "Good",
+        "Battery_Status": "Weak"
+    }
 
-{
-  "Vehicle_Model": 1,
-  "Maintenance_History": 2,
-  "Reported_Issues": 4,
-  "Vehicle_Age": 15,
-  "Odometer_Reading": 200000,
-  "Days_Since_Last_Service": 800,
-  "Accident_History": 3,
-  "Fuel_Efficiency": 5,
-  "Tire_Condition": 2,
-  "Brake_Condition": 2,
-  "Battery_Status": 2
-}
+Test 5 - Worn Tyres
+
+    {
+        "Vehicle_Model": "SUV",
+        "Maintenance_History": "Average",
+        "Reported_Issues": 3,
+        "Vehicle_Age": 7,
+        "Odometer_Reading": 95000,
+        "Days_Since_Last_Service": 220,
+        "Accident_History": 1,
+        "Fuel_Efficiency": 13,
+        "Tire_Condition": "Worn Out",
+        "Brake_Condition": "Good",
+        "Battery_Status": "Good"
+    }
+
+Test 6 - Poor Maintenance
+
+    {
+        "Vehicle_Model": "Truck",
+        "Maintenance_History": "Poor",
+        "Reported_Issues": 5,
+        "Vehicle_Age": 10,
+        "Odometer_Reading": 180000,
+        "Days_Since_Last_Service": 350,
+        "Accident_History": 2,
+        "Fuel_Efficiency": 8,
+        "Tire_Condition": "Worn Out",
+        "Brake_Condition": "Worn Out",
+        "Battery_Status": "Weak"
+    }
+
+Test 7 - Motorcycle
+
+    {
+        "Vehicle_Model": "Motorcycle",
+        "Maintenance_History": "Good",
+        "Reported_Issues": 0,
+        "Vehicle_Age": 2,
+        "Odometer_Reading": 14000,
+        "Days_Since_Last_Service": 60,
+        "Accident_History": 0,
+        "Fuel_Efficiency": 42,
+        "Tire_Condition": "New",
+        "Brake_Condition": "Good",
+        "Battery_Status": "Good"
+    }
+
+Test 8 - Bus
+
+    {
+        "Vehicle_Model": "Bus",
+        "Maintenance_History": "Average",
+        "Reported_Issues": 4,
+        "Vehicle_Age": 8,
+        "Odometer_Reading": 160000,
+        "Days_Since_Last_Service": 400,
+        "Accident_History": 2,
+        "Fuel_Efficiency": 7,
+        "Tire_Condition": "Worn Out",
+        "Brake_Condition": "Good",
+        "Battery_Status": "Weak"
+    }
+
+Test 9 - Delivery Van
+
+    {
+        "Vehicle_Model": "Van",
+        "Maintenance_History": "Average",
+        "Reported_Issues": 3,
+        "Vehicle_Age": 6,
+        "Odometer_Reading": 110000,
+        "Days_Since_Last_Service": 250,
+        "Accident_History": 1,
+        "Fuel_Efficiency": 11,
+        "Tire_Condition": "Good",
+        "Brake_Condition": "Worn Out",
+        "Battery_Status": "Good"
+    }
+
+Test 10 - Critical Vehicle
+
+    {
+        "Vehicle_Model": "Truck",
+        "Maintenance_History": "Poor",
+        "Reported_Issues": 10,
+        "Vehicle_Age": 18,
+        "Odometer_Reading": 350000,
+        "Days_Since_Last_Service": 700,
+        "Accident_History": 5,
+        "Fuel_Efficiency": 5,
+        "Tire_Condition": "Worn Out",
+        "Brake_Condition": "Worn Out",
+        "Battery_Status": "Weak"
+    }
