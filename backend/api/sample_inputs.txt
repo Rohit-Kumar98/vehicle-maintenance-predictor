@@ -1,0 +1,151 @@
+{
+    "Vehicle_Model": "Car",
+    "Maintenance_History": "Good",
+    "Reported_Issues": 0,
+    "Vehicle_Age": 1,
+    "Odometer_Reading": 8000,
+    "Days_Since_Last_Service": 30,
+    "Accident_History": 0,
+    "Fuel_Efficiency": 22,
+    "Tire_Condition": "New",
+    "Brake_Condition": "New",
+    "Battery_Status": "New"
+}
+
+
+{
+    "Vehicle_Model": "SUV",
+    "Maintenance_History": "Good",
+    "Reported_Issues": 1,
+    "Vehicle_Age": 2,
+    "Odometer_Reading": 18000,
+    "Days_Since_Last_Service": 60,
+    "Accident_History": 0,
+    "Fuel_Efficiency": 18,
+    "Tire_Condition": "Good",
+    "Brake_Condition": "Good",
+    "Battery_Status": "New"
+}
+
+
+
+{
+    "Vehicle_Model": "Car",
+    "Maintenance_History": "Average",
+    "Reported_Issues": 2,
+    "Vehicle_Age": 5,
+    "Odometer_Reading": 90000,
+    "Days_Since_Last_Service": 170,
+    "Accident_History": 1,
+    "Fuel_Efficiency": 15,
+    "Tire_Condition": "Good",
+    "Brake_Condition": "Good",
+    "Battery_Status": "Good"
+}
+
+
+
+
+{
+    "Vehicle_Model": "Car",
+    "Maintenance_History": "Good",
+    "Reported_Issues": 1,
+    "Vehicle_Age": 9,
+    "Odometer_Reading": 65000,
+    "Days_Since_Last_Service": 140,
+    "Accident_History": 0,
+    "Fuel_Efficiency": 17,
+    "Tire_Condition": "Good",
+    "Brake_Condition": "Good",
+    "Battery_Status": "Weak"
+}
+
+
+
+
+
+{
+    "Vehicle_Model": "SUV",
+    "Maintenance_History": "Average",
+    "Reported_Issues": 2,
+    "Vehicle_Age": 6,
+    "Odometer_Reading": 110000,
+    "Days_Since_Last_Service": 200,
+    "Accident_History": 1,
+    "Fuel_Efficiency": 13,
+    "Tire_Condition": "Good",
+    "Brake_Condition": "Worn Out",
+    "Battery_Status": "Good"
+}
+
+
+
+
+
+{
+    "Vehicle_Model": "Van",
+    "Maintenance_History": "Average",
+    "Reported_Issues": 3,
+    "Vehicle_Age": 7,
+    "Odometer_Reading": 140000,
+    "Days_Since_Last_Service": 240,
+    "Accident_History": 2,
+    "Fuel_Efficiency": 11,
+    "Tire_Condition": "Worn Out",
+    "Brake_Condition": "Good",
+    "Battery_Status": "Good"
+}
+
+
+
+
+
+
+{
+    "Vehicle_Model": "Truck",
+    "Maintenance_History": "Average",
+    "Reported_Issues": 4,
+    "Vehicle_Age": 10,
+    "Odometer_Reading": 260000,
+    "Days_Since_Last_Service": 250,
+    "Accident_History": 1,
+    "Fuel_Efficiency": 7,
+    "Tire_Condition": "Good",
+    "Brake_Condition": "Good",
+    "Battery_Status": "Good"
+}
+
+
+
+{
+    "Vehicle_Model": "Car",
+    "Maintenance_History": "Poor",
+    "Reported_Issues": 3,
+    "Vehicle_Age": 8,
+    "Odometer_Reading": 150000,
+    "Days_Since_Last_Service": 380,
+    "Accident_History": 1,
+    "Fuel_Efficiency": 11,
+    "Tire_Condition": "Good",
+    "Brake_Condition": "Good",
+    "Battery_Status": "Weak"
+}
+
+
+
+
+
+
+{
+    "Vehicle_Model": "Motorcycle",
+    "Maintenance_History": "Average",
+    "Reported_Issues": 4,
+    "Vehicle_Age": 9,
+    "Odometer_Reading": 85000,
+    "Days_Since_Last_Service": 220,
+    "Accident_History": 1,
+    "Fuel_Efficiency": 28,
+    "Tire_Condition": "Worn Out",
+    "Brake_Condition": "Good",
+    "Battery_Status": "Weak"
+}
